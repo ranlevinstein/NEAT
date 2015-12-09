@@ -1,0 +1,24 @@
+#BlueJ class context
+comment0.params=id\ type
+comment0.target=Node(int,\ NodeType)
+comment1.params=
+comment1.target=java.util.List\ getInputs()
+comment10.params=n
+comment10.target=boolean\ hasAncestor(Node)
+comment2.params=
+comment2.target=NodeType\ getType()
+comment3.params=
+comment3.target=float\ output()
+comment4.params=
+comment4.target=float\ lastOutput()
+comment5.params=
+comment5.target=void\ calculateInputOutput()
+comment6.params=
+comment6.target=void\ update()
+comment7.params=input
+comment7.target=float\ activation(float)
+comment8.params=x
+comment8.target=float\ sigmoid(float)
+comment9.params=n
+comment9.target=boolean\ equals(Node)
+numComments=11
