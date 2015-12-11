@@ -18,8 +18,7 @@ public class Connection
         this.weight = weight;
         this.enabled = enabled;
         this.innovation = innovation;
-        recurrent = in.hasAncestor(out);
-        
+        recurrent = in.hasAncestor(out) || (in.type == NodeType.OUTPUT && out.type == NodeType.OUTPUT);
     }
     
     float output(){

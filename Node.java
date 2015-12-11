@@ -30,7 +30,34 @@ public class Node
         inputs = new ArrayList<Connection>();
     }
     
-    public List getInputs(){
+    /*public Node copy(){//what about recurrent connections?
+        Node copy = new Node(id, type);
+        for (Connection c : inputs){
+                Node in = c.in.copy();
+                Connection connectionCopy = new Connection(in, copy, c.weight, c.enabled, c.innovation);
+                connectionCopy.recurrent = c.recurrent;
+                copy.addInput(connectionCopy);
+        }
+        return copy;
+    }*/
+    
+    
+    public Node copyWithoutConnections(){
+        return new Node(this.id, this.type);
+    }
+    
+    public void addInput(Connection c){
+        if(c.out.equals(this))
+            inputs.add(c);
+        else
+            System.out.println("error: trying to add invalid connection to node with id" + id);
+    }
+    
+    public void removeInput(Connection c){
+        inputs.remove(c);
+    }
+    
+    public List<Connection> getInputs(){
         return inputs;
     }
 
@@ -41,8 +68,8 @@ public class Node
     float output(){
         if(type == NodeType.INPUT) return input;
         if(type == NodeType.BIAS) return 1;
-        if(calculatedInOut) return output;
-        return activation(input);
+        if(!calculatedInOut) calculateInputOutput();
+        return output;
     }
     
     float lastOutput(){
@@ -50,18 +77,28 @@ public class Node
     }
     
     protected void calculateInputOutput(){
-        input = 0;
-        for (Connection c : inputs) {
-            input += c.output();
+        if(type != NodeType.INPUT && type != NodeType.BIAS){
+            input = 0;
+            for (Connection c : inputs) {
+                input += c.output();
+            }
+            output = activation(input);
+            calculatedInOut = true;
         }
-        output = activation(input);
-        calculatedInOut = true;
     }
     
     void update(){
         lastOutput = output();
         input = 0;
         calculatedInOut = false;
+    }
+    
+    void updateAncestors(){
+        update();
+        for (Connection c : inputs){
+            if(!c.recurrent)
+                c.in.updateAncestors();
+        }
     }
     
     protected float activation(float input){
