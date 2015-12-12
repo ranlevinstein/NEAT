@@ -6,6 +6,7 @@
  * @version 1.0
  */
 
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -186,5 +187,31 @@ public class ANN
         Connection c2 = new Connection(n, disable.out, disable.weight, true, innovation2);
         addConnection(c1);
         addConnection(c2);
+        lastNodeId++;
+        n.id = lastNodeId;
+    }
+    
+    int[] getInnovationNumbers(){
+        List<Connection> connections = getConnections();
+        int [] innov = new int[connections.size()];
+        int i = 0;
+        for(Connection c: connections){
+            innov[i] = c.innovation;
+            i++;
+        }
+        Arrays.sort(innov);
+        return innov;
+    }
+    
+    public static boolean similar(ANN a, ANN b){
+        int[] innov1 = a.getInnovationNumbers();
+        int[] innov2 = b.getInnovationNumbers();
+        if(innov1 != innov2)
+            return false;
+        for(int i = 0; i < innov1.length; i++){
+            if(innov1[i] != innov2[i])
+                return false;
+        }
+        return true;
     }
 }
