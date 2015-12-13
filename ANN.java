@@ -13,9 +13,11 @@ import java.util.List;
 
 public class ANN
 {
-    int lastNodeId;
+    protected int lastNodeId;
     Node[] inputs;
     Node[] outputs;
+    float fitness;
+    float adjustedFitness;
     ANN(int numOfInputs, int numOfOutputs){
         lastNodeId = 0;
         inputs = new Node[numOfInputs+1];
@@ -32,19 +34,15 @@ public class ANN
         }
     }
     
-    
-    ANN copy(){//copy this ANN
-        ANN copy = new ANN(inputs.length-1, outputs.length);
-        List<Node> nodes = getNodes();
-        List<Connection> connections = getConnections();
+    ANN(List<Node> nodes, List<Connection> connections){
         //attach inputs, bias and outputs to it's place in the new ANN.
         for(int i = 0; i < inputs.length-1; i++){
             //id = i+1
-            copy.inputs[i] = getNodeWithId(nodes, i+1);
+            inputs[i] = getNodeWithId(nodes, i+1);
         }
-        copy.inputs[inputs.length-1] = getNodeWithId(nodes, inputs.length);
+        inputs[inputs.length-1] = getNodeWithId(nodes, inputs.length);
         for(int i = 0; i < outputs.length; i++){
-            copy.outputs[i] = getNodeWithId(nodes, i+1+inputs.length);
+            outputs[i] = getNodeWithId(nodes, i+1+inputs.length);
         }
         for(Connection c : connections){
             Node in = getNodeWithId(nodes, c.in.id);
@@ -53,7 +51,11 @@ public class ANN
             con.recurrent = c.recurrent;
             out.addInput(con);
         }
-        return copy;
+    }
+    
+    
+    ANN copy(){//copy this ANN
+        return new ANN(getNodes(), getConnections());
     }
     
     public List<Node> getNodes(){
@@ -97,21 +99,28 @@ public class ANN
         
     }
 
-    protected static boolean containsConnectionWithInnov(List<Connection> connections, int innov){
+    static boolean containsConnectionWithInnov(List<Connection> connections, int innov){
         for (Connection c : connections) {
             if(c.innovation == innov) return true;
         }
         return false;
     }
     
-    protected static boolean containsNodeWithId(List<Node> nodes, int id){
+    static Connection getConnectionWithInnov(List<Connection> connections, int innov){
+        for (Connection c : connections) {
+            if(c.innovation == innov) return c;
+        }
+        return null;
+    }
+    
+    static boolean containsNodeWithId(List<Node> nodes, int id){
         for (Node n : nodes) {
             if(n.id == id) return true;
         }
         return false;
     }
     
-    protected static Node getNodeWithId(List<Node> nodes, int id){
+    static Node getNodeWithId(List<Node> nodes, int id){
         for (Node n : nodes) {
             if(n.id == id) return n;
         }
@@ -160,7 +169,7 @@ public class ANN
         return null;
     }
     
-    boolean ValidToAdd(Connection c){
+    boolean validToAdd(Connection c){
         if(c.in == null || c.out == null){
             //System.out.println("error: one or more of the nodes in this conncetions don't exist");
             return false;
@@ -170,21 +179,33 @@ public class ANN
             //System.out.println("error: trying to add input connection to input node");
             return false;
         }
+        List<Connection> connections = getConnections();
+        for(Connection con: connections){
+            if(con.in.id == c.in.id && con.out.id == c.out.id){
+                //System.out.println("error: trying to add existing connection");
+                return false;
+            }
+        }
         return true;
     }
     
     void addConnection(Connection c){
-        if(ValidToAdd(c)){
+        if(validToAdd(c)){
+            Reproduction.setInnovation(this, c);
             c.out.addInput(c);
         }else{
             //System.out.println("c isn't valid to add to this ANN");
         }
     }
     
-    void addNode(Connection disable, Node n, int innovation1, int innovation2){
+    void addNode(Connection disable, Node n){
         disable.enabled = false;
-        Connection c1 = new Connection(disable.in, n, 1, true, innovation1);
-        Connection c2 = new Connection(n, disable.out, disable.weight, true, innovation2);
+        Connection c1 = new Connection(disable.in, n, 1, true);
+        Connection c2 = new Connection(n, disable.out, disable.weight, true);
+        if(disable.recurrent){
+            c1.recurrent = true;
+            c2.recurrent = false;
+        }
         addConnection(c1);
         addConnection(c2);
         lastNodeId++;

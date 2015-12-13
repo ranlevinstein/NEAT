@@ -1,0 +1,18 @@
+#BlueJ class context
+comment0.params=model
+comment0.target=Specie(ANN)
+comment1.params=ann
+comment1.target=float\ compatibility(ANN)
+comment2.params=ann
+comment2.target=boolean\ addable(ANN)
+comment3.params=ann
+comment3.target=void\ add(ANN)
+comment4.params=
+comment4.target=float\ adjustedFitnessSum()
+comment5.params=numOfOffsprings
+comment5.target=java.util.List\ offsprings(int)
+comment6.params=
+comment6.target=ANN\ rouletteFitnessANN()
+comment7.params=
+comment7.target=ANN\ rouletteFitnessOffspring()
+numComments=8

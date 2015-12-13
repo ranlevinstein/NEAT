@@ -3,7 +3,7 @@ comment0.params=id\ type
 comment0.target=Node(int,\ NodeType)
 comment1.params=
 comment1.target=Node\ copyWithoutConnections()
-comment1.text=public\ Node\ copy(){//what\ about\ recurrent\ connections?\n\ \ \ \ \ \ \ \ Node\ copy\ \=\ new\ Node(id,\ type);\n\ \ \ \ \ \ \ \ for\ (Connection\ c\ \:\ inputs){\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ in\ \=\ c.in.copy();\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Connection\ connectionCopy\ \=\ new\ Connection(in,\ copy,\ c.weight,\ c.enabled,\ c.innovation);\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ connectionCopy.recurrent\ \=\ c.recurrent;\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ copy.addInput(connectionCopy);\n\ \ \ \ \ \ \ \ }\n\ \ \ \ \ \ \ \ return\ copy;\n}
+comment1.text=public\ Node\ copy(){//what\ about\ recurrent\ connections?\r\n\ \ \ \ \ \ \ \ Node\ copy\ \=\ new\ Node(id,\ type);\r\n\ \ \ \ \ \ \ \ for\ (Connection\ c\ \:\ inputs){\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Node\ in\ \=\ c.in.copy();\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Connection\ connectionCopy\ \=\ new\ Connection(in,\ copy,\ c.weight,\ c.enabled,\ c.innovation);\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ connectionCopy.recurrent\ \=\ c.recurrent;\r\n\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ copy.addInput(connectionCopy);\r\n\ \ \ \ \ \ \ \ }\r\n\ \ \ \ \ \ \ \ return\ copy;\r\n}
 comment10.params=
 comment10.target=void\ updateAncestors()
 comment11.params=input

@@ -1,6 +1,8 @@
 #BlueJ class context
-comment0.params=in\ out\ weight\ enabled\ innovation
-comment0.target=Connection(Node,\ Node,\ float,\ boolean,\ int)
-comment1.params=
-comment1.target=float\ output()
-numComments=2
+comment0.params=in\ out\ weight\ enabled
+comment0.target=Connection(Node,\ Node,\ float,\ boolean)
+comment1.params=in\ out\ weight\ enabled\ innovation
+comment1.target=Connection(Node,\ Node,\ float,\ boolean,\ int)
+comment2.params=
+comment2.target=float\ output()
+numComments=3
