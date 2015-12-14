@@ -19,6 +19,7 @@ public class Population
     FitnessEvaluator fitnessEvaluator;
     Population(int initialSize, ANN emptyANN, FitnessEvaluator fitnessEvaluator){
         species = new ArrayList<Specie>();
+        emptyANN.fitness = fitnessEvaluator.getFitness(emptyANN);
         for(int i = 0; i < initialSize; i++){
             add(emptyANN);
         }
@@ -39,10 +40,16 @@ public class Population
                 offsprings.add(offspring);
             }
         }
+        species = new ArrayList<Specie>();
+        float maxFitness = 0;
         for(ANN offspring: offsprings){
             offspring.fitness = fitnessEvaluator.getFitness(offspring);
             add(offspring);
+            if(offspring.fitness > maxFitness){
+                maxFitness = offspring.fitness;
+            }
         }
+        System.out.println("generation " + generation + "  max fitness " +maxFitness);
         updateAdjustedFitness();
         generation++;
     }

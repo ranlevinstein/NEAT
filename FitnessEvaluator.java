@@ -7,5 +7,5 @@
  */
 public interface FitnessEvaluator
 {
-    abstract float getFitness(ANN ann);
+    public abstract float getFitness(ANN ann);
 }
