@@ -53,6 +53,32 @@ public class ANN
         }
     }
     
+    void addRandomNode(){
+        List<Connection> connections = getConnections();
+        int index = (int)(Math.random()*connections.size());
+        addNode(connections.get(index), new Node(-1, NodeType.HIDDEN));
+    }
+    
+    boolean addRandomConnection(float weight, boolean enabled){
+        List<Connection> addableConnections = new ArrayList<Connection>();
+        List<Node> nodes = getNodes();
+        for(Node n1: nodes){
+            for(Node n2: nodes){
+                Connection c = new Connection(n1, n2, weight, enabled);
+                if(validToAdd(c)){
+                    addableConnections.add(c);
+                }
+            }
+        }
+        if(addableConnections.isEmpty()){
+            return false;//ANN is full. can't add any new connection without adding another node first.
+        }else{
+            int index = (int)(Math.random()*addableConnections.size());
+            addConnection(addableConnections.get(index));
+            return true;
+        }
+    }
+    
     
     ANN copy(){//copy this ANN
         return new ANN(getNodes(), getConnections());
@@ -210,6 +236,7 @@ public class ANN
         addConnection(c2);
         lastNodeId++;
         n.id = lastNodeId;
+        n.addInput(c1);
     }
     
     int[] getInnovationNumbers(){

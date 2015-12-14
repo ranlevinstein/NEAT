@@ -13,8 +13,24 @@ import java.util.List;
 
 public class Reproduction
 {
-    //All of this factor are just guesses.
-    //I need to choose them more carefully in the future.
+    //All of this factosr are just smart guesses.
+    //I might need to choose them more carefully in the future.
+    
+    static float minWeight = -15;
+    static float maxWeight = 15;
+    
+    static float perturbationDistance = (float)(maxWeight/5.0);
+    
+    static float connectionMutateRate = (float)0.8;
+    static float connectionPerturbed = (float)0.9;//The other 0.1 is the probability that new random weight is asigned.
+    
+    static float disableIfOneOfParentsDisabled = (float)0.75;
+    
+    static float addNewNode = (float)0.05;
+    static float addNewConnection = (float)0.3;
+    
+    static float mutationWithoutCrossover = (float) 0.25;
+    
     static float c1 = (float)1.0;
     static float c2 = (float)1.0;
     static float c3 = (float)0.4;
@@ -31,28 +47,65 @@ public class Reproduction
         generation++;
     }
     
+    static ANN mutate(ANN ann){
+        List<Connection> connections = ann.getConnections();
+        for(Connection c: connections){
+            double alpha = Math.random();
+            if(alpha < connectionPerturbed){
+                double beta = Math.random();
+                c.weight = (float)(c.weight + beta*2*connectionPerturbed - connectionPerturbed);
+            }else{
+                c.weight = randomWeight();
+            }
+        }
+        ANN mutation = new ANN(ann.getNodes(), connections);
+        double alpha = Math.random();
+        if(alpha <= addNewNode){
+            mutation.addRandomNode();
+        }
+        alpha = Math.random();
+        if(alpha <= addNewConnection){
+            mutation.addRandomConnection(randomWeight(), true);
+        }
+        return mutation;
+    }
+    
     static ANN crossover(ANN a, ANN b){
         List<Connection> offspringConnections = new ArrayList<Connection>();
         List<Connection> aConnections = a.getConnections();
         List<Connection> bConnections = b.getConnections();
         for(Connection c: aConnections){
             Connection d = ANN.getConnectionWithInnov(bConnections, c.innovation);
+            double beta = Math.random();
             if(d != null){
                 double alpha = Math.random();
                 if(alpha < 0.5){
+                    if((!c.enabled || !d.enabled) && beta <= disableIfOneOfParentsDisabled){
+                        c.enabled = false;
+                    }
                     offspringConnections.add(c);
                 }else{
-                    offspringConnections.add(d);
                     bConnections.remove(d);
+                    if((!c.enabled || !d.enabled) && beta <= disableIfOneOfParentsDisabled){
+                        d.enabled = false;
+                    }
+                    offspringConnections.add(d);
                 }
             }else{
                 if(a.fitness >= b.fitness){
+                    if(!c.enabled && beta <= disableIfOneOfParentsDisabled){
+                        c.enabled = false;
+                    }
                     offspringConnections.add(c);
                 }
             }
         }
         if(b.fitness > a.fitness){
             for(Connection c: bConnections){
+                double beta = Math.random();
+                if(!c.enabled && beta <= disableIfOneOfParentsDisabled){
+                        c.enabled = false;
+                }
                 offspringConnections.add(c);
             }
         }
@@ -71,10 +124,7 @@ public class Reproduction
     }
     
     static float compatibilityDistance(ANN a, ANN b){
-        int excess = 1;
-        int disjoint = 1;
-        int[] innovA = a.getInnovationNumbers();
-        int[] innovB = b.getInnovationNumbers();
+        
         List<Connection> conA = a.getConnections();
         List<Connection> conB = b.getConnections();
         float sumDiff = 0;
@@ -84,6 +134,8 @@ public class Reproduction
                 if(ca.innovation == cb.innovation){
                     sumDiff += Math.abs(ca.weight-cb.weight);
                     counter++;
+                    conA.remove(ca);
+                    conB.remove(cb);
                 }
             }
         } 
@@ -91,6 +143,8 @@ public class Reproduction
         if(counter != 0){//not defined otherwise. i am not sure yet what the value of w should be in that case;
             w = sumDiff/(float)counter;
         }
+        int excess = conA.size();
+        int disjoint = conB.size();
         float n = Math.max(conA.size(), conB.size());
         float distance = (c1*disjoint+c2*excess)/n + c3*w;
         return distance;
@@ -117,6 +171,11 @@ public class Reproduction
         }
         c.innovation = Reproduction.innovation;
         Reproduction.innovation++;
+    }
+    
+    
+    static float randomWeight(){
+        return (float)((maxWeight-minWeight)*Math.random()+minWeight);
     }
     
 }

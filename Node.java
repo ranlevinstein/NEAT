@@ -47,7 +47,7 @@ public class Node
     }
     
     public void addInput(Connection c){
-        if(c.out.equals(this))
+        if(c.out.equals(this) && !inputs.contains(c))
             inputs.add(c);
         else
             System.out.println("error: trying to add invalid connection to node with id" + id);
@@ -102,7 +102,11 @@ public class Node
     }
     
     protected float activation(float input){
-        return sigmoid(input);
+        return modifiedSigmoid(input);
+    }
+    
+    protected float modifiedSigmoid(float x){
+        return sigmoid((float)((4.9)*x));
     }
     
     protected float sigmoid(float x){

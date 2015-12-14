@@ -1,8 +1,10 @@
 #BlueJ class context
-comment0.params=initialSize\ emptyANN
-comment0.target=Population(int,\ ANN)
-comment1.params=ann
-comment1.target=void\ add(ANN)
-comment2.params=
-comment2.target=void\ updateAdjustedFitness()
-numComments=3
+comment0.params=initialSize\ emptyANN\ fitnessEvaluator
+comment0.target=Population(int,\ ANN,\ FitnessEvaluator)
+comment1.params=
+comment1.target=void\ newGeneration()
+comment2.params=ann
+comment2.target=void\ add(ANN)
+comment3.params=
+comment3.target=void\ updateAdjustedFitness()
+numComments=4

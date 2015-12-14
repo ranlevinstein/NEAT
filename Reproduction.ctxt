@@ -1,10 +1,14 @@
 #BlueJ class context
 comment0.params=
 comment0.target=void\ newGeneration()
-comment1.params=a\ b
-comment1.target=ANN\ crossover(ANN,\ ANN)
+comment1.params=ann
+comment1.target=ANN\ mutate(ANN)
 comment2.params=a\ b
-comment2.target=float\ compatibilityDistance(ANN,\ ANN)
-comment3.params=ann\ c
-comment3.target=void\ setInnovation(ANN,\ Connection)
-numComments=4
+comment2.target=ANN\ crossover(ANN,\ ANN)
+comment3.params=a\ b
+comment3.target=float\ compatibilityDistance(ANN,\ ANN)
+comment4.params=ann\ c
+comment4.target=void\ setInnovation(ANN,\ Connection)
+comment5.params=
+comment5.target=float\ randomWeight()
+numComments=6

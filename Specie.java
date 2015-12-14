@@ -35,10 +35,10 @@ public class Specie
         }
     }
     
-    float adjustedFitnessSum(){
+    float expAdjustedFitnessSum(){
         float sum = 0;
         for(ANN ann: anns){
-            sum += ann.adjustedFitness;
+            sum += Math.exp(ann.adjustedFitness);
         }
         return sum;
     }
@@ -47,16 +47,24 @@ public class Specie
         //we are doing species reproduction a bit diffrent here.
         //we will choose 2 anns randomly acording to their adjuested fitness and create a new population.(not necesirly different!)
         //all the new offsprings might be mutated.
-        
-        return null;
+        List<ANN> offsprings = new ArrayList<ANN>();
+        for(int i = 0; i < numOfOffsprings; i++){
+            double alpha = Math.random();
+            if(alpha <= Reproduction.mutationWithoutCrossover){
+                offsprings.add(Reproduction.mutate(rouletteFitnessANN()));
+            }else{
+                offsprings.add(Reproduction.mutate(rouletteFitnessOffspring()));
+            }
+        }
+        return offsprings;
     }
     
     ANN rouletteFitnessANN(){
-        float alpha = (float)Math.random()*adjustedFitnessSum();
+        float alpha = (float)Math.random()*expAdjustedFitnessSum();
         float sum = 0;
         ANN p = null;
         for(ANN ann: anns){
-            sum += ann.adjustedFitness;
+            sum += Math.exp(ann.adjustedFitness);
             if(sum >= alpha){
                 p = ann;
             }

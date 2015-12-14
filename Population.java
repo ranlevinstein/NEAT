@@ -15,12 +15,36 @@ public class Population
 {
     List<Specie> species;
     int size;
-    Population(int initialSize, ANN emptyANN){
+    int generation;
+    FitnessEvaluator fitnessEvaluator;
+    Population(int initialSize, ANN emptyANN, FitnessEvaluator fitnessEvaluator){
         species = new ArrayList<Specie>();
         for(int i = 0; i < initialSize; i++){
             add(emptyANN);
         }
         size = initialSize;
+        generation = 1;
+        this.fitnessEvaluator = fitnessEvaluator;
+    }
+    
+    void newGeneration(){
+        List<ANN> offsprings = new ArrayList<ANN>();
+        float fitnessSum = 0;
+        for(Specie s: species){
+            fitnessSum += s.expAdjustedFitnessSum();
+        }
+        for(Specie s: species){
+            List<ANN> specieOffsprings = s.offsprings((int)(size * s.expAdjustedFitnessSum()/fitnessSum));
+            for(ANN offspring: specieOffsprings){
+                offsprings.add(offspring);
+            }
+        }
+        for(ANN offspring: offsprings){
+            offspring.fitness = fitnessEvaluator.getFitness(offspring);
+            add(offspring);
+        }
+        updateAdjustedFitness();
+        generation++;
     }
     
     
