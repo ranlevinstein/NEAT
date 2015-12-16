@@ -9,6 +9,7 @@ public class FunctionAproximationFitness implements FitnessEvaluator
 {
     //evaluate fucntion x^3 between -1 and 1
     public float getFitness(ANN ann){
+        ann.reset();
         return rSquared(ann);
     }
     
@@ -27,7 +28,7 @@ public class FunctionAproximationFitness implements FitnessEvaluator
             ssres += (getRealValue(x)-getApproximation(ann, x))*(getRealValue(x)-getApproximation(ann, x));
         }
         //System.out.println((float)1/ssres);
-        return (float)1/ssres;
+        return (float)10000/ssres;
     }
     
     public static float getApproximation(ANN ann, float x){
@@ -38,6 +39,6 @@ public class FunctionAproximationFitness implements FitnessEvaluator
     }
     
     public static float getRealValue(float x){
-        return (float)0.7;
+        return (float)x*x*x;
     }
 }

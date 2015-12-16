@@ -30,6 +30,26 @@ public class Node implements Comparable
         inputs = new ArrayList<Connection>();
     }
     
+    void reset(){
+        input = 0;
+        lastOutput = 0;
+        output = 0;
+        calculatedInOut = false;
+    }
+    
+    void resetAncestors(){
+        resetAncestors(new ArrayList<Node>());
+    }
+    
+    void resetAncestors(List<Node> reseted){
+        if(reseted.contains(this)) return;
+        reseted.add(this);
+        reset();
+        for(Connection c: inputs){
+            c.in.resetAncestors(reseted);
+        }
+    }
+    
     /*public Node copy(){//what about recurrent connections?
         Node copy = new Node(id, type);
         for (Connection c : inputs){

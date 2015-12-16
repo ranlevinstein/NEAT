@@ -37,7 +37,7 @@ public class Population
         }
         for(Specie s: species){
             Collections.sort(s.anns);
-            offsprings.add(s.anns.get(0));
+            offsprings.add(s.anns.get(s.anns.size()-1));
         }
         for(Specie s: species){
             List<ANN> specieOffsprings = s.offsprings((int)(size * s.expAdjustedFitnessSum()/fitnessSum));
@@ -65,6 +65,7 @@ public class Population
             //System.out.println(maxFitness);
         }
         
+        add(best);
         
         //System.out.println(species.size());
         System.out.println("generation " + generation + "  max fitness " +maxFitness+"   species  " + species.size() + "  max connections   " + maxConnections);

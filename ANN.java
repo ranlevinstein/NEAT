@@ -241,11 +241,9 @@ public class ANN implements Comparable
     }
     
     void reset(){
-        for(int i = 0; i < this.inputs.length-1; i++){//this.inputs length is +1 then input because of bias.
-            this.inputs[i].input = 0;
+        for(int i = 0; i < outputs.length; i++){
+            this.outputs[i].resetAncestors();
         }
-        update();
-        update();//twice so last value of nodes will reset too.
     }
     
     float[] step(float[] inputs){
