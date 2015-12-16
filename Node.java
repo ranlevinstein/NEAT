@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Node
+public class Node implements Comparable
 {
     public int id;
     protected NodeType type; 
@@ -47,10 +47,18 @@ public class Node
     }
     
     public void addInput(Connection c){
+        c.out = this;
         if(c.out.equals(this) && !inputs.contains(c))
             inputs.add(c);
-        else
-            System.out.println("error: trying to add invalid connection to node with id" + id);
+        else{
+            if(!c.out.equals(this)){
+                System.out.println("error: trying to add invalid connection to node with id " + id);
+            }else{
+                System.out.println("error: trying to add existing connection to node with id " + id);
+            }
+            
+        }
+            
     }
     
     public void removeInput(Connection c){
@@ -78,26 +86,32 @@ public class Node
     
     protected void calculateInputOutput(){
         if(type != NodeType.INPUT && type != NodeType.BIAS){
+            calculatedInOut = true;
             input = 0;
             for (Connection c : inputs) {
                 input += c.output();
             }
             output = activation(input);
-            calculatedInOut = true;
         }
     }
     
     void update(){
-        lastOutput = output();
+        lastOutput = output;
         input = 0;
         calculatedInOut = false;
     }
     
     void updateAncestors(){
+        updateAncestors(new ArrayList<Node>());
+    }
+    
+    void updateAncestors(List<Node> updated){
+        if(updated.contains(this)) return;
         update();
+        updated.add(this);
         for (Connection c : inputs){
             if(!c.recurrent)
-                c.in.updateAncestors();
+                c.in.updateAncestors(updated);
         }
     }
     
@@ -114,17 +128,28 @@ public class Node
     }
     
     public boolean equals(Node n){
-        return (id == n.id) && (type == n.getType()) && (inputs.equals(n.getInputs()));
+        return (id == n.id) && (type == n.getType());//removed identical connections because of a problem
     }
     
-    
     public boolean hasAncestor(Node n){
-        if (n.type == NodeType.INPUT || n.type == NodeType.BIAS) return false;
-        if(this.equals(n)) return true;
+        return hasAncestor(n, new ArrayList<Node>());
+    }
+    
+    public boolean hasAncestor(Node n, List<Node> visited){
+        if(visited.contains(this)) return false;
+        visited.add(this);
+        if(this.type == NodeType.INPUT || this.type == NodeType.BIAS) return false;
+        if(visited.contains(n)) return true;
         for (Connection c : inputs) {
-            if(c.in.hasAncestor(n)) return true;
+            if(c.in.hasAncestor(n, visited)) return true;
         }
         return false;
+    }
+    
+    public int compareTo(Object o)
+    {
+        Node n = (Node) o;
+        return(id - n.id);
     }
 }
 

@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Collections;
 
-public class ANN
+public class ANN implements Comparable
 {
     protected int lastNodeId;
     Node[] inputs;
@@ -32,32 +33,85 @@ public class ANN
             lastNodeId++;
             outputs[i] = new Node(lastNodeId, NodeType.OUTPUT);
         }
+        System.out.println("output length  " + outputs.length);
     }
     
     ANN(List<Node> nodes, List<Connection> connections){
         //attach inputs, bias and outputs to it's place in the new ANN.
-        for(int i = 0; i < inputs.length-1; i++){
+        int largestId = 0;
+        List<Node> inputsList = new ArrayList<Node>();
+        List<Node> outputsList = new ArrayList<Node>();
+        for(Node n: nodes){
+            if(n.type == NodeType.INPUT || n.type == NodeType.BIAS){
+                if(!containsNodeWithId(inputsList, n.id)){
+                    inputsList.add(n);
+                }
+            }
+            if(n.type == NodeType.OUTPUT){
+                if(!containsNodeWithId(outputsList, n.id)){
+                    outputsList.add(n);
+                }
+            }
+            if(largestId < n.id){
+                largestId = n.id;//maybe there is a need to regulate the id's.
+            }
+        }
+        //System.out.println("number of outs  " + numOfOutputs);
+        lastNodeId = largestId;
+        Collections.sort(inputsList);
+        Collections.sort(outputsList);
+        inputs = new Node[inputsList.size()];
+        outputs = new Node[outputsList.size()];
+        if(inputsList.size() > 2){
+            System.out.println("inputsss   " + inputsList.size());
+        }
+        for(int i = 0; i < inputs.length; i++){
             //id = i+1
-            inputs[i] = getNodeWithId(nodes, i+1);
+            inputs[i] = inputsList.get(i);;
+            if(inputs[i] == null){
+                //inputs[i] = new Node(i+1, NodeType.INPUT);
+            }
         }
-        inputs[inputs.length-1] = getNodeWithId(nodes, inputs.length);
+        if(inputs[inputs.length-1] == null){
+                //inputs[inputs.length-1] = new Node(inputs.length, NodeType.BIAS);
+        }
         for(int i = 0; i < outputs.length; i++){
-            outputs[i] = getNodeWithId(nodes, i+1+inputs.length);
+            outputs[i] = outputsList.get(i);
+            if(outputs[i] == null){
+                //outputs[i] = new Node(i+1+inputs.length, NodeType.OUTPUT);
+            }
         }
+        
         for(Connection c : connections){
             Node in = getNodeWithId(nodes, c.in.id);
+            if(in == null){
+                in = new Node(c.in.id, c.in.type);
+                nodes.add(in);
+            }
             Node out = getNodeWithId(nodes, c.out.id);
-            Connection con = new Connection(in, out, c.weight, c.enabled, c.innovation);
-            con.recurrent = c.recurrent;
-            out.addInput(con);
+            if(out == null){
+                out = new Node(c.out.id, c.out.type);
+                nodes.add(out);
+            }
+            //if(in != null && out != null){
+                Connection con = new Connection(in, out, c.weight, c.enabled, c.innovation);
+                con.recurrent = c.recurrent;
+                out.addInput(con);
+            //}
         }
+        //System.out.println("output length  " + outputs.length);
     }
     
-    void addRandomNode(){
+    boolean addRandomNode(){
         List<Connection> connections = getConnections();
-        int index = (int)(Math.random()*connections.size());
-        addNode(connections.get(index), new Node(-1, NodeType.HIDDEN));
-    }
+        if(connections.size() > 0){
+            int index = (int)(Math.random()*connections.size());
+            addNode(connections.get(index), new Node(-1, NodeType.HIDDEN));
+            return true;
+        }else{
+            return false;
+        }
+   }
     
     boolean addRandomConnection(float weight, boolean enabled){
         List<Connection> addableConnections = new ArrayList<Connection>();
@@ -106,17 +160,42 @@ public class ANN
         }
     }
     
+    public void addConnection(Connection c, int id){
+        List<Node> visited = new ArrayList<Node>();
+        for(int i = 0; i < outputs.length; i++){
+            recursiveAddConnection(c, id, outputs[i], visited);
+        }
+    }
+    
+    void recursiveAddConnection(Connection c, int id, Node n, List<Node> visited){
+        if(visited.contains(n)){
+            return;
+        }
+        visited.add(n);
+        if(n.id == id){
+            n.addInput(c);
+            return;
+        }
+        for(Connection con: n.getInputs()){
+            //if(!con.recurrent){
+                recursiveAddConnection(c, id, con.in, visited);
+            //}
+        }
+    }
+    
     
     public List<Connection> getConnections(){
         List<Connection> connections = new ArrayList<Connection>();
         for(int i = 0; i < outputs.length; i++){
+            if(outputs[i] == null) System.out.println("outputs isss nullllllll!");
            addConnections(connections, outputs[i]);
         }
         return connections;
     }
     
     protected void addConnections(List<Connection> connections, Node n){
-        for(Connection c: n.getInputs()){
+        List<Connection> inputs = n.getInputs();
+        for(Connection c: inputs){
             if(!containsConnectionWithInnov(connections, c.innovation)){
                 connections.add(c);
                 addConnections(connections, c.in);
@@ -155,20 +234,29 @@ public class ANN
     
     //protected add 
     
+    void update(){
+        for(int i = 0; i < outputs.length; i++){
+            this.outputs[i].updateAncestors();
+        }
+    }
     
-    
+    void reset(){
+        for(int i = 0; i < this.inputs.length-1; i++){//this.inputs length is +1 then input because of bias.
+            this.inputs[i].input = 0;
+        }
+        update();
+        update();//twice so last value of nodes will reset too.
+    }
     
     float[] step(float[] inputs){
         float[] outputs = new float[this.outputs.length];
-        for(int i = 0; i < this.inputs.length; i++){
+        for(int i = 0; i < this.inputs.length-1; i++){//this.inputs length is +1 then input because of bias.
             this.inputs[i].input = inputs[i];
         }
         for(int i = 0; i < outputs.length; i++){
             outputs[i] = this.outputs[i].output();
         }
-        for(int i = 0; i < outputs.length; i++){
-            this.outputs[i].updateAncestors();
-        }
+        update();
         return outputs;
     }
     
@@ -218,10 +306,15 @@ public class ANN
     void addConnection(Connection c){
         if(validToAdd(c)){
             Reproduction.setInnovation(this, c);
-            c.out.addInput(c);
+            addConnection(c, c.out.id);
+            //c.out.addInput(c);
         }else{
             //System.out.println("c isn't valid to add to this ANN");
         }
+    }
+    
+    void setAAsB(Node a, Node b){
+        a = b;
     }
     
     void addNode(Connection disable, Node n){
@@ -262,4 +355,13 @@ public class ANN
         }
         return true;
     }
+    
+    public int compareTo(Object o){
+        ANN ann = (ANN) o;
+        float result = adjustedFitness-ann.adjustedFitness;
+        if(result == 0) return 0;
+        if(result < 0) return -1;
+        return 1;
+    }
+    
 }

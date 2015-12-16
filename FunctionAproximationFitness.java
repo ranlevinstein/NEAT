@@ -12,23 +12,32 @@ public class FunctionAproximationFitness implements FitnessEvaluator
         return rSquared(ann);
     }
     
-    public float rSquared(ANN ann){
+    public static float rSquared(ANN ann){
         float ymean = 0;
+        float numOfSamples = 0;
         float sstot = 0;
         float ssres = 0;
+        for(float x = -1; x <= 1; x+= 0.05){
+            numOfSamples++;
+            ymean += getRealValue(x);
+        }
+        ymean /= numOfSamples;
         for(float x = -1; x <= 1; x+= 0.05){
             sstot += (getRealValue(x)-ymean)*(getRealValue(x)-ymean);
             ssres += (getRealValue(x)-getApproximation(ann, x))*(getRealValue(x)-getApproximation(ann, x));
         }
-        return 1-(float)ssres/sstot;
+        //System.out.println((float)1/ssres);
+        return (float)1/ssres;
     }
     
-    public float getApproximation(ANN ann, float x){
+    public static float getApproximation(ANN ann, float x){
         float[] in = {x};
-        return ann.step(in)[0];
+        //System.out.println(ann.step(in).length);
+        float out = ann.step(in)[0];
+        return out;
     }
     
-    public float getRealValue(float x){
-        return x*x*x;
+    public static float getRealValue(float x){
+        return (float)0.7;
     }
 }

@@ -16,9 +16,11 @@ public class Specie
     ANN model;
     List<ANN> anns;
     Specie(ANN model){
+        
         this.model = model.copy();
         anns = new ArrayList<ANN>();
         anns.add(model);
+        //System.out.println("specie model outs  " + anns.get(0).outputs.length);
     }
     
     float compatibility(ANN ann){
