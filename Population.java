@@ -36,8 +36,13 @@ public class Population
             fitnessSum += s.expAdjustedFitnessSum();
         }
         for(Specie s: species){
-            Collections.sort(s.anns);
-            offsprings.add(s.anns.get(s.anns.size()-1));
+            ANN best = s.anns.get(0);
+            for(ANN ann: s.anns){
+                if(best.fitness < ann.fitness){
+                    best = ann;
+                }
+            }
+            offsprings.add(best);
         }
         for(Specie s: species){
             List<ANN> specieOffsprings = s.offsprings((int)(size * s.expAdjustedFitnessSum()/fitnessSum));

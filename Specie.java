@@ -38,7 +38,7 @@ public class Specie
     }
     
     float expAdjustedFitnessSum(){
-        float sum = 0;
+        float sum = 0;//we must keep fitness small because large fitness can cause the sum to go to infinity!
         for(ANN ann: anns){
             sum += Math.exp(ann.adjustedFitness);
         }

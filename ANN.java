@@ -58,8 +58,8 @@ public class ANN implements Comparable
         }
         //System.out.println("number of outs  " + numOfOutputs);
         lastNodeId = largestId;
-        Collections.sort(inputsList);
-        Collections.sort(outputsList);
+        //Collections.sort(inputsList);
+        //Collections.sort(outputsList);
         inputs = new Node[inputsList.size()];
         outputs = new Node[outputsList.size()];
         if(inputsList.size() > 2){
@@ -67,9 +67,16 @@ public class ANN implements Comparable
         }
         for(int i = 0; i < inputs.length; i++){
             //id = i+1
-            inputs[i] = inputsList.get(i);;
-            if(inputs[i] == null){
-                //inputs[i] = new Node(i+1, NodeType.INPUT);
+            Node minId = inputsList.get(0);
+            for(Node in: inputsList){
+                if(in.id < minId.id){
+                    minId = in;
+                }
+            }
+            inputs[i] = minId;
+            inputsList.remove(minId);
+            if(minId.id != i+1){
+                System.out.println("error: wanted id " + i+1 + "  minimal remaining id " + minId.id);
             }
         }
         if(inputs[inputs.length-1] == null){
@@ -77,8 +84,16 @@ public class ANN implements Comparable
         }
         for(int i = 0; i < outputs.length; i++){
             outputs[i] = outputsList.get(i);
-            if(outputs[i] == null){
-                //outputs[i] = new Node(i+1+inputs.length, NodeType.OUTPUT);
+            Node minId = outputsList.get(0);
+            for(Node out: outputsList){
+                if(out.id < minId.id){
+                    minId = out;
+                }
+            }
+            outputs[i] = minId;
+            outputsList.remove(minId);
+            if(minId.id != i+1+inputs.length){
+                System.out.println("error: wanted id " + i+1+inputs.length + "  minimal remaining id " + minId.id);
             }
         }
         

@@ -8,8 +8,13 @@
 public class Tester
 {
     public static void test(){
+        FitnessEvaluator fitness = new FunctionAproximationFitness();
         ANN ann = new ANN(1, 1);
-        ann.addRandomConnection(5, true);
-        System.out.println("size  " + ann.getConnections().size());
+        for(int i = 0; i < 50; i++){
+            ann.addRandomConnection(2, true);
+            ann.addRandomNode();
+        }
+        System.out.println("t1: " + fitness.getFitness(ann));
+        System.out.println("t2: " + fitness.getFitness(ann));
     }
 }

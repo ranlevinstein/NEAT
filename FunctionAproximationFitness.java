@@ -28,7 +28,7 @@ public class FunctionAproximationFitness implements FitnessEvaluator
             ssres += (getRealValue(x)-getApproximation(ann, x))*(getRealValue(x)-getApproximation(ann, x));
         }
         //System.out.println((float)1/ssres);
-        return (float)10000/ssres;
+        return (float)1/ssres;
     }
     
     public static float getApproximation(ANN ann, float x){
@@ -39,6 +39,6 @@ public class FunctionAproximationFitness implements FitnessEvaluator
     }
     
     public static float getRealValue(float x){
-        return (float)x*x*x;
+        return (float)1;
     }
 }
