@@ -22,19 +22,19 @@ public class Reproduction
     static float perturbationDistance = (float)(maxWeight/10.0);
     
     static float connectionMutateRate = (float)0.25;
-    static float connectionPerturbed = (float)0.7;//The other 0.3 is the probability that new random weight is asigned.
+    static float connectionPerturbed = (float)0.9;//The other 0.1 is the probability that new random weight is asigned.
     
     static float disableIfOneOfParentsDisabled = (float)0.75;
     
-    static float addNewNode = (float)0.007;
-    static float addNewConnection = (float)0.02;
+    static float addNewNode = (float)0.004;
+    static float addNewConnection = (float)0.01;
     
     static float mutationWithoutCrossover = (float) 0.25;
     
-    static float c1 = (float)2.0;
-    static float c2 = (float)2.0;
+    static float c1 = (float)2;
+    static float c2 = (float)2;
     static float c3 = (float)0.2;
-    static float compatibilityThreshold = (float)1000;//3.5
+    static float compatibilityThreshold = (float)4;//3.5
     
     static int innovation = 1;
     static int generation = 1;
@@ -94,14 +94,17 @@ public class Reproduction
                     if((!c.enabled || !d.enabled) && beta <= disableIfOneOfParentsDisabled){
                         c.enabled = false;
                     }
+                    c.weight = (float)(alpha*1.1*c.weight + (1-alpha*1.1)*d.weight);//averaging
                     offspringConnections.add(c);
                 }else{
                     bConnections.remove(d);
                     if((!c.enabled || !d.enabled) && beta <= disableIfOneOfParentsDisabled){
                         d.enabled = false;
                     }
+                    d.weight = (float)(alpha*1.1*c.weight + (1-alpha*1.1)*d.weight);//averaging
                     offspringConnections.add(d);
                 }
+                
             }else{
                 if(a.fitness >= b.fitness){
                     if(!c.enabled && beta <= disableIfOneOfParentsDisabled){
@@ -160,7 +163,7 @@ public class Reproduction
         }
         int excess = sizeA;
         int disjoint = sizeB;
-        float n = 1;//Math.max(sizeA, sizeB);
+        float n = Math.max(sizeA, sizeB);
         float distance = (c1*disjoint+c2*excess)/n + c3*w;
         if(n == 0){
             distance = 0;

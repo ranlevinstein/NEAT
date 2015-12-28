@@ -18,7 +18,10 @@ public class Population
     int size;
     int generation;
     FitnessEvaluator fitnessEvaluator;
+    float maxFitness;
     Population(int initialSize, ANN emptyANN, FitnessEvaluator fitnessEvaluator){
+        this.fitnessEvaluator = fitnessEvaluator;
+        maxFitness = 0;//cant be negative!!!!!!
         species = new ArrayList<Specie>();
         emptyANN.fitness = fitnessEvaluator.getFitness(emptyANN);
         for(int i = 0; i < initialSize; i++){
@@ -26,10 +29,10 @@ public class Population
         }
         size = initialSize;
         generation = 1;
-        this.fitnessEvaluator = fitnessEvaluator;
     }
     
     void newGeneration(){
+        maxFitness = 0;
         List<ANN> offsprings = new ArrayList<ANN>();
         float fitnessSum = 0;
         for(Specie s: species){
@@ -52,16 +55,8 @@ public class Population
         }
         species.clear();
         Reproduction.newGeneration();
-        ANN best = offsprings.get(0);
-        float maxFitness = 0;
         float maxConnections = 0;
         for(ANN offspring: offsprings){
-            offspring.fitness = fitnessEvaluator.getFitness(offspring);
-            //System.out.println(offspring.fitness + " > " + maxFitness +"    " + (offspring.fitness > maxFitness));
-            if(offspring.fitness > maxFitness){
-                maxFitness = offspring.fitness;
-                best = offspring;
-            }
             if(offspring.getConnections().size() > maxConnections){
                 maxConnections = offspring.getConnections().size();
                 
@@ -70,11 +65,8 @@ public class Population
             //System.out.println(maxFitness);
         }
         
-        add(best);
-        
         //System.out.println(species.size());
         System.out.println("generation " + generation + "  max fitness " +maxFitness+"   species  " + species.size() + "  max connections   " + maxConnections);
-        System.out.println("winner: nodes  " + best.getNodes().size() +"   connections   " + best.getConnections().size());
         updateAdjustedFitness();
         generation++;
     }
@@ -82,6 +74,10 @@ public class Population
     
     void add(ANN ann){
         ann.reset();
+        ann.fitness = fitnessEvaluator.getFitness(ann);
+        if(maxFitness < ann.fitness){
+            maxFitness = ann.fitness;
+        }
         Specie match = null;
         float minDistance = Float.MAX_VALUE;
         for(Specie s: species){
