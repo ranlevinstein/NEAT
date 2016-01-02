@@ -39,6 +39,6 @@ public class FunctionAproximationFitness implements FitnessEvaluator
     }
     
     public static float getRealValue(float x){
-        return (float)(Math.sin(x)*Math.cos(x));
+        return (float) (Math.sin(1*x));
     }
 }

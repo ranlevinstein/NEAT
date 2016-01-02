@@ -27,14 +27,14 @@ public class Reproduction
     static float disableIfOneOfParentsDisabled = (float)0.75;
     
     static float addNewNode = (float)0.004;
-    static float addNewConnection = (float)0.01;
+    static float addNewConnection = (float)0.015;
     
     static float mutationWithoutCrossover = (float) 0.25;
     
     static float c1 = (float)2;
     static float c2 = (float)2;
     static float c3 = (float)0.2;
-    static float compatibilityThreshold = (float)4;//3.5
+    static float compatibilityThreshold = (float)3;//3.5
     
     static int innovation = 1;
     static int generation = 1;
@@ -163,7 +163,7 @@ public class Reproduction
         }
         int excess = sizeA;
         int disjoint = sizeB;
-        float n = Math.max(sizeA, sizeB);
+        float n = Math.min(sizeA, sizeB);//was max
         float distance = (c1*disjoint+c2*excess)/n + c3*w;
         if(n == 0){
             distance = 0;

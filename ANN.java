@@ -268,9 +268,14 @@ public class ANN implements Comparable
         }
         for(int i = 0; i < outputs.length; i++){
             outputs[i] = this.outputs[i].output();
+            outputs[i] = constrain(outputs[i], 0 , 1);
         }
         update();
         return outputs;
+    }
+    
+    private static float constrain(float value, float min, float max) {
+        return Math.min(Math.max(value, min), max);
     }
     
     Node getNode(int id){

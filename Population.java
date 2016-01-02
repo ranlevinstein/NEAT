@@ -34,7 +34,8 @@ public class Population
     void newGeneration(){
         maxFitness = 0;
         List<ANN> offsprings = new ArrayList<ANN>();
-        float fitnessSum = 0;
+        long fitnessSum = 0;
+        float maxF = 0;
         for(Specie s: species){
             fitnessSum += s.expAdjustedFitnessSum();
         }
@@ -45,7 +46,11 @@ public class Population
                     best = ann;
                 }
             }
-            offsprings.add(best);
+            if(best.fitness > maxF){
+                offsprings.add(best);
+                maxF = best.fitness;
+            }
+            
         }
         for(Specie s: species){
             List<ANN> specieOffsprings = s.offsprings((int)(size * s.expAdjustedFitnessSum()/fitnessSum));
@@ -69,6 +74,9 @@ public class Population
         System.out.println("generation " + generation + "  max fitness " +maxFitness+"   species  " + species.size() + "  max connections   " + maxConnections);
         updateAdjustedFitness();
         generation++;
+        if(maxFitness == 0){
+            System.out.println();
+        }
     }
     
     

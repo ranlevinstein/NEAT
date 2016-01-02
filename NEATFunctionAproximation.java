@@ -10,7 +10,7 @@ public class NEATFunctionAproximation
    public static void main(){
        ANN function = new ANN(1, 1);
        FitnessEvaluator fitness = new FunctionAproximationFitness();
-       Population pop = new Population(500, function, fitness);
+       Population pop = new Population(100, function, fitness);
        for(int i = 0; i < 1000; i++){
            pop.newGeneration();
        }

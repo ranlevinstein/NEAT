@@ -136,7 +136,10 @@ public class Node implements Comparable
     }
     
     protected float activation(float input){
-        return modifiedSigmoid(input);
+        //if(input > 1) return 1;
+        //if(input < 0) return 0;
+        return input;
+        //return modifiedSigmoid(input);
     }
     
     protected float modifiedSigmoid(float x){
